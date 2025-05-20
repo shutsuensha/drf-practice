@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Session Api Test
+{% endblock %}
+
+{% block content %}
+
+<script>
+	document.addEventListener("DOMContentLoaded", async () => {
+
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== "") {
+				const cookies = document.cookie.split(";");
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					// Проверка, начинается ли cookie с нужного имени
+					if (cookie.substring(0, name.length + 1) === (name + "=")) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+
+
+		async function getAds() {
+			try {
+				const response = await fetch("/api/ads/", {
+					method: "GET",
+					headers: {
+						"Accept": "application/json",
+					},
+					credentials: "include"
+				});
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+
+				const data = await response.json();
+				console.log("Ads:", data);
+
+				// можно отрисовать в DOM
+			} catch (error) {
+				console.error("Ошибка при запросе /api/ads/:", error);
+			}
+		}
+
+		async function createAd() {
+			const csrftoken = getCookie("csrftoken");
+
+			const adData = {
+				title: "Пример объявления",
+				description: "Описание объявления",
+				category: "Техника",
+				condition: "new"
+			};
+
+			try {
+				const response = await fetch("/api/ads/", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"X-CSRFToken": csrftoken,
+					},
+					body: JSON.stringify(adData),
+					credentials: "include",
+				});
+
+				if (!response.ok) {
+					throw new Error(`Ошибка POST-запроса: ${response.status}`);
+				}
+
+				const data = await response.json();
+				console.log("Создано объявление:", data);
+			} catch (error) {
+				console.error("Ошибка при создании объявления:", error);
+			}
+		}
+
+		await createAd()
+		await getAds()
+
+	});
+</script>
+{% endblock %}

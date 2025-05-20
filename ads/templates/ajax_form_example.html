@@ -1,0 +1,53 @@
+<form id="ad-form" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Создать</button>
+</form>
+
+<div id="form-result" class="text-red-600 mt-4"></div>
+
+<script>
+  const form = document.getElementById("ad-form");
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let cookie of cookies) {
+        const [key, value] = cookie.trim().split("=");
+        if (key === name) {
+            cookieValue = decodeURIComponent(value);
+            break;
+        }
+        }
+    }
+    return cookieValue;
+    }   
+
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    const response = await fetch("{% url 'create_ad_ajax' %}", {
+      method: "POST",
+      body: formData,
+      headers: {
+        // CSRFToken берем или из формы или из куки getCookie("csrftoken")
+        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+        credentials: "include" //@login_required
+      }
+    });
+
+    const data = await response.json();
+
+    const resultDiv = document.getElementById("form-result");
+    if (data.success) {
+      resultDiv.innerText = "Объявление успешно создано!";
+      form.reset();
+    } else if (data.errors) {
+      resultDiv.innerText = JSON.stringify(data.errors, null, 2);
+    }
+  });
+</script>
