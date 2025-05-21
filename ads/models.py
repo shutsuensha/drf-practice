@@ -83,3 +83,10 @@ class ExchangeProposal(models.Model):
 
     def __str__(self):
         return f"Предложение обмена от '{self.ad_sender}' к '{self.ad_receiver}' [{self.get_status_display()}]"
+
+
+
+class Post(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)

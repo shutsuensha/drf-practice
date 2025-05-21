@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import ExchangeProposal,  Ad, Tag, Category
+from .models import ExchangeProposal,  Ad, Tag, Category, Post
 
 
 class ProposalCreateSerializer(serializers.ModelSerializer):
@@ -109,3 +109,10 @@ class AdSerializer(serializers.ModelSerializer):
             instance.tags.set(tags_data)
 
         return instance
+
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'content', 'owner']
+        read_only_fields = ['owner']

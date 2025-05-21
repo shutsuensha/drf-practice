@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,7 +49,8 @@ INSTALLED_APPS = [
     "accounts",
     "rest_framework",
     "django_filters",
-    "drf_yasg",
+    "drf_spectacular",
+    'rest_framework_simplejwt.token_blacklist'
 ]
 
 MIDDLEWARE = [
@@ -63,9 +65,11 @@ MIDDLEWARE = [
 
 
 REST_FRAMEWORK = {
-    # Используем только сессии + CSRF
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
     ],
     # По желанию включаем права доступа
     'DEFAULT_PERMISSION_CLASSES': [
@@ -91,6 +95,30 @@ REST_FRAMEWORK = {
     },
 }
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Exchange Ads Platform Rest API",
+    "DESCRIPTION": "REST API for an exchange ads platform. Built with Django and DRF.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SECURITY": [{"BearerAuth": []}],
+    "COMPONENTS": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+            }
+        }
+    },
+}
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
 
 ROOT_URLCONF = "src.urls"
 

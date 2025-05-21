@@ -1,8 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, permissions
 
-from .models import ExchangeProposal, Ad, Category
-from .serializers import ProposalCreateSerializer, ProposalStatusUpdateSerializer, AdSerializer, CategorySerializer
+from .models import ExchangeProposal, Ad, Category, Post
+from .serializers import ProposalCreateSerializer, ProposalStatusUpdateSerializer, AdSerializer, CategorySerializer, PostSerializer
 
 from rest_framework import viewsets
 
@@ -281,3 +281,29 @@ class AdDetailAPIView(APIView):
         ad = get_object_or_404(Ad, pk=pk)
         ad.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class PostListCreateView(generics.ListCreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+
+
+
+
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
