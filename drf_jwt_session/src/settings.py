@@ -50,8 +50,24 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "drf_spectacular",
-    'rest_framework_simplejwt.token_blacklist'
+    'rest_framework_simplejwt.token_blacklist',
+    'django.contrib.sites',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google'
 ]
+
+SITE_ID = 1
+REST_USE_JWT = True
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # отключим пока для простоты
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
